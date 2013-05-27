@@ -63,6 +63,14 @@ pasori *pasori_open(void);
   成功した場合 psori 型のポインタを返す。失敗すると NULL が返される。
 
 
+pasori_devices *pasori_open_multi(void);
+
+概要
+ 複数台のPaSoRiのデバイスファイルをオープンする。
+
+返り値
+  pasori_devices 型のポインタを返す。失敗すると pasori_devices->error_code にエラーコードが設定された状態で返される。
+
 
 int pasori_init(pasori *p)
 
@@ -526,3 +534,5 @@ PASORI_ERR_TYPE    未対応のハードウェア。
 
 ZXB01226@nifty.com （オリジナルソースコード）
 rfujita@redhat.com （RPM化及びバージョン0.0.7をベースにしたgit化）
+hiroya@cuc.ac.jp    (複数台のPaSoRiへの対応)
+
