@@ -1,3 +1,8 @@
+2013-05-27  Hiroya Kubo <hiroya at cuc.ac.jp>
+
+	* src/pasori_command.cc (pasori_open_multi) add function to support multiple pasori devices. 
+	* src/libpafe.h (tag_pasori_devices) add struct to support multiple pasori devices. 
+	
 2012-05-06  Hiroyuki Ito  <ZXB01226 at nifty.com>
 
 	* Version 0.0.8 release.

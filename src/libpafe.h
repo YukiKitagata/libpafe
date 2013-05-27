@@ -60,6 +60,13 @@ typedef struct _felica_block_info
   uint16 block;
 } felica_block_info;
 
+typedef struct tag_pasori_devices
+{
+  pasori **pasoris;
+  int num_devices;
+  int error_code;
+} pasori_devices;
+
 /*~DEFINE felica */
 
 #include "pasori_command.h"

@@ -2,6 +2,8 @@
 #ifndef __PASORI_COMMAND_H
 #define __PASORI_COMMAND_H
 
+pasori_devices *pasori_open_multi(void);
+
 pasori *pasori_open(void);
 int pasori_init(pasori *p);
 void pasori_close(pasori *p);

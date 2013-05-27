@@ -37,7 +37,7 @@ struct tag_pasori
 #define PASORIUSB_PRODUCT_S320 0x01bb
 #define PASORIUSB_PRODUCT_S330 0x02e1
 
-#define TIMEOUT 1000
+#define TIMEOUT 100
 
 /* FIXME: UNKNOWN CONSTANTS */
 static const uint8 S320_INIT0[] = { 0x62, 0x01, 0x82 };
@@ -1026,4 +1026,244 @@ pasori_recv(pasori *pp, uint8 *data, int *size)
   *size = i;
 
   return 0;
+}
+
+
+
+pasori_devices* 
+pasori_open_multi(void)
+{
+
+  pasori_devices* pd;
+  int* pasoriDeviceIndexArray;
+  unsigned int pasori_device_index, num_usb_devices = 0;
+  int r;
+
+  pd = (pasori_devices *)malloc(sizeof(pasori_devices));
+  pd->error_code = 0;
+  pd->num_devices = 0;
+
+#ifdef HAVE_LIBUSB_1
+
+  libusb_context *ctx = NULL;
+  int usb_device_index;
+
+  struct libusb_device_descriptor * descs;
+  libusb_device **devs;
+
+  r = libusb_init(&ctx);
+
+  if (r < 0) {
+    pd->error_code = PASORI_ERR_COM;//throw "libusb_init was failed";
+    return pd;
+  }
+
+#ifdef DEBUG_USB
+  libusb_set_debug(ctx, 3);
+#endif
+
+  num_usb_devices = libusb_get_device_list(ctx, &devs);
+
+  if (num_usb_devices < 0) {
+    pd->error_code = PASORI_ERR_COM;//throw "There are no USB devices";
+    return pd;
+  }
+
+  pasoriDeviceIndexArray = (int*) malloc(sizeof(int) * num_usb_devices);
+
+  descs = (struct libusb_device_descriptor *) malloc(sizeof(struct libusb_device_descriptor) * num_usb_devices);
+
+
+
+  for(usb_device_index = 0; usb_device_index < num_usb_devices; usb_device_index++) {
+
+    r = libusb_get_device_descriptor(devs[usb_device_index], &descs[usb_device_index]);
+    if (r < 0) {
+      pd->error_code = PASORI_ERR_COM;//throw "failed to get device descriptor";
+      return pd;
+    }
+
+#ifdef DEBUG_USB
+    Log("Check for %04x:%04x\n", descs[usb_device_index].idVendor, descs[usb_device_index].idProduct);
+#endif
+    if (descs[usb_device_index].idVendor == PASORIUSB_VENDOR &&
+	(descs[usb_device_index].idProduct == PASORIUSB_PRODUCT_S310 ||
+	 descs[usb_device_index].idProduct == PASORIUSB_PRODUCT_S320 ||
+	 descs[usb_device_index].idProduct == PASORIUSB_PRODUCT_S330)) {
+#ifdef DEBUG_USB
+      Log("Device is found %04x:%04x\n", descs[usb_device_index].idVendor, descs[usb_device_index].idProduct);
+#endif
+      pasoriDeviceIndexArray[pd->num_devices++] = usb_device_index;
+    }
+  }
+
+  if(0 == pd->num_devices){
+    Log("pasori not found in USB BUS");
+    pd->error_code = PASORI_ERR_COM;
+    return pd;
+  }
+
+  //printf("%d pasori device(s) found in USB BUS.\n", pd->num_devices);
+
+  pd->pasoris = (pasori **) malloc(sizeof(pasori *) * pd->num_devices);
+
+  for(pasori_device_index = 0; pasori_device_index < pd->num_devices; pasori_device_index++){
+
+#ifdef DEBUG
+    printf("pasori device index [%d]\n",pasori_device_index);
+#endif
+    usb_device_index = pasoriDeviceIndexArray[pasori_device_index];
+
+    pd->pasoris[pasori_device_index] = (pasori *) malloc(sizeof(pasori));
+
+    if (pd->pasoris[pasori_device_index] == NULL){
+      Log("pasori malloc error");
+      pd->error_code = PASORI_ERR_COM;
+      return pd;
+    }
+
+    memset(pd->pasoris[pasori_device_index], 0, sizeof(pasori));
+    pd->pasoris[pasori_device_index]->i_ep_in = 0x81;
+    pd->pasoris[pasori_device_index]->devs = devs;
+
+    pd->pasoris[pasori_device_index]->ctx = ctx;
+
+    struct libusb_device_descriptor desc = descs[usb_device_index];
+
+    switch (desc.idProduct) {
+    case PASORIUSB_PRODUCT_S310:
+      pd->pasoris[pasori_device_index]->type = PASORI_TYPE_S310;
+      break;
+    case PASORIUSB_PRODUCT_S320:
+      pd->pasoris[pasori_device_index]->type = PASORI_TYPE_S320;
+      break;
+    case PASORIUSB_PRODUCT_S330:
+      pd->pasoris[pasori_device_index]->type = PASORI_TYPE_S330;
+      break;
+    default:
+      pd->error_code = PASORI_ERR_TYPE;
+      printf("ERROR: PASORI_ERR_TYPE\n");
+      return pd;
+    }
+
+    //printf("pasori #%d = type:%d vendor:%d product:%d\n", i, pd->pasoris[pasori_device_index]->type, desc.idVendor, desc.idProduct);
+
+    /*
+    libusb_device_handle *dh;
+    dh = libusb_open_device_with_vid_pid(ctx,
+                                         desc.idVendor,
+                                  desc.idProduct);
+    */
+
+    r = libusb_open(pd->pasoris[pasori_device_index]->devs[usb_device_index], &pd->pasoris[pasori_device_index]->dh);
+
+    if(r < 0) {
+      pd->error_code = PASORI_ERR_COM;
+      printf("ERROR libusb_device_handle is null.\n");
+      return pd;
+    }
+
+    if(libusb_kernel_driver_active(pd->pasoris[pasori_device_index]->dh, 0) == 1) {
+      r = libusb_detach_kernel_driver(pd->pasoris[pasori_device_index]->dh, 0);
+      if (r) {
+        pd->error_code = PASORI_ERR_COM;
+        printf("ERROR libusb_detach_kernel_driver.\n");
+        return pd;
+      }
+    }
+
+    pd->pasoris[pasori_device_index]->timeout = TIMEOUT;
+
+    get_end_points(pd->pasoris[pasori_device_index]);
+
+    if(libusb_claim_interface(pd->pasoris[pasori_device_index]->dh, INTERFACE_NUMBER) < 0) {
+      pd->error_code = PASORI_ERR_COM;
+      printf("ERROR libusb_claim_interface.\n");
+        return pd;
+    }
+
+  }
+  return pd;
+
+#else  // HAVE_LIBUSB_1 
+
+  struct usb_bus *bus;
+  struct usb_device *dev;
+
+  struct pasori* pasoris;
+
+  pasoris = (struct pasori *) malloc(sizeof(struct pasori) * 1);
+
+  usb_init();
+#ifdef DEBUG_USB
+  usb_set_debug(255);
+#else
+  usb_set_debug(0);
+#endif
+  usb_find_busses();
+  usb_find_devices();
+
+  for (bus = usb_get_busses(); bus; bus = bus->next) {
+    for (dev = bus->devices; dev; dev = dev->next) {
+#ifdef DEBUG_USB
+      Log("check for %04x:%04x\n", dev->descriptor.idVendor, dev->descriptor.idProduct);	
+#endif
+      if (dev->descriptor.idVendor == PASORIUSB_VENDOR &&
+	  (dev->descriptor.idProduct == PASORIUSB_PRODUCT_S310 ||
+	   dev->descriptor.idProduct == PASORIUSB_PRODUCT_S320 ||
+	   dev->descriptor.idProduct == PASORIUSB_PRODUCT_S330)) {
+#ifdef DEBUG_USB
+	Log("Device is found %04x:%04x\n", dev->descriptor.idVendor, dev->descriptor.idProduct);
+#endif
+	goto finish;
+      }
+    }
+  }
+
+  Log("pasori not found in USB BUS");
+
+  pd->error_code = PASORI_ERR_COM;
+
+  return pd;
+
+ finish:
+  switch (dev->descriptor.idProduct) {
+  case PASORIUSB_PRODUCT_S310:
+    pasoris[0]->type = PASORI_TYPE_S310;
+    break;
+  case PASORIUSB_PRODUCT_S320:
+    pasoris[0]->type = PASORI_TYPE_S320;
+    break;
+  case PASORIUSB_PRODUCT_S330:
+    pasoris[0]->type = PASORI_TYPE_S330;
+    break;
+  default:
+    pd->error_code = PASORI_ERR_TYPE;
+    return pd;
+  }
+
+  pasoris[0]->dh = usb_open(dev);
+  pasoris[0]->dev = dev;
+  pasoris[0]->timeout = TIMEOUT;
+  get_end_points(pasoris[0]);
+
+  if (usb_set_configuration(pasoris[0]->dh, 1)) {
+    pd->error_code = PASORI_ERR_CON;
+    return pd;
+  }
+
+  if (usb_claim_interface
+      (pasoris[0]->dh, pasoris[0]->dev->config->interface->altsetting->bInterfaceNumber)) {
+    pd->error_code = PASORI_ERR_CON;
+    return pd;
+  }
+
+  pd->num_devices = 1;
+  pd->pasoris = pasoris;
+  pd->error_code = 0;
+
+  return pd;
+
+#endif
+
 }
