@@ -1127,6 +1127,7 @@ pasori_open_multi(void)
     pd->pasoris[pasori_device_index]->devs = devs;
 
     pd->pasoris[pasori_device_index]->ctx = ctx;
+    pd->pasoris[pasori_device_index]->timeout = TIMEOUT;
 
     struct libusb_device_descriptor desc = descs[usb_device_index];
 
