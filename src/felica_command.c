@@ -193,6 +193,7 @@ felica_polling(pasori *pp, uint16 systemcode, uint8 RFU, uint8 timeslot)
   uint8 cmd[5];
   uint8 resp[DATASIZE + 1];
   int l, n, ofst;
+  int r;
 
   Log("%s\n", __func__);
 
@@ -205,18 +206,26 @@ felica_polling(pasori *pp, uint16 systemcode, uint8 RFU, uint8 timeslot)
   cmd[3] = RFU;				/* zero */
   cmd[4] = timeslot;
   n = 5;
+  r = 0;
+
+  pasori_set_error_code(pp, 0);
 
   switch (pasori_type(pp)) {
   case PASORI_TYPE_S310:
   case PASORI_TYPE_S320:
     ofst = 0;
-    pasori_write(pp, cmd, &n);
+    r = pasori_write(pp, cmd, &n);
     break;
   case PASORI_TYPE_S330:
     ofst = 3;
-    pasori_list_passive_target(pp, cmd, &n);
+    r = pasori_list_passive_target(pp, cmd, &n);
     break;
   default:
+    return NULL;
+  }
+
+  if(r != 0){
+    pasori_set_error_code(pp, 100+r);
     return NULL;
   }
 
@@ -224,6 +233,7 @@ felica_polling(pasori *pp, uint16 systemcode, uint8 RFU, uint8 timeslot)
   l = _felica_pasori_read(pp, resp, &n, ofst);
 
   if (l) {
+    pasori_set_error_code(pp, 200+l);
     return NULL;
   }
 

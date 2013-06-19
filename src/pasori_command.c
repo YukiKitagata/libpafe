@@ -29,6 +29,7 @@ struct tag_pasori
 #endif	/* HAVE_LIBUSB_1 */
   int b_ep_in, b_ep_out, i_ep_in;
   int timeout;
+  int error_code;
   enum PASORI_TYPE type;
 };
 
@@ -236,6 +237,22 @@ pasori_set_timeout(pasori *p, int timeout)
     return;
 
   p->timeout = timeout;
+}
+
+void pasori_set_error_code(pasori *p, int error_code)
+{
+  if (p == NULL)
+    return;
+
+  p->error_code = error_code;
+}
+
+int pasori_get_error_code(pasori *p)
+{
+  if (p == NULL)
+    return -1;
+
+  return p->error_code;
 }
 
 int
@@ -870,6 +887,7 @@ pasori_open(void)
 
   memset(pp, 0, sizeof(pasori));
   pp->i_ep_in = 0x81;
+  pp->timeout = TIMEOUT;
 
   if (open_usb(pp)) {
     pasori_close(pp);

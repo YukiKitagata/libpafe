@@ -26,6 +26,8 @@ int pasori_test_polling(pasori *p);
 int pasori_list_passive_target(pasori *pp, unsigned char *payload, int *size);
 
 void pasori_set_timeout(pasori *p, int timeout);
+void pasori_set_error_code(pasori *p, int error_code);
+int pasori_get_error_code(pasori *p);
 
 #ifdef DEBUG
 #define Log printf
