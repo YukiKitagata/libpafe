@@ -6,5 +6,6 @@ debian
 libtool
 spec
 src/.deps
+src/.libs
 stamp-h1
 tests
