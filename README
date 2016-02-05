@@ -430,9 +430,25 @@ int felica_read_single(felica * f, int servicecode, int mode, uint8 block, uint8
 
 
 
-int felica_write(felica *f, int servicecode, int mode, uint8 addr, uint8 *data);
+int felica_write_single(felica *f, int servicecode, int mode, uint8 addr, uint8 *data);
 
-未実装
+概要
+  Write コマンドを送信する。ブロック数は 1 に固定。
+
+引数
+  f     felica_polling で取得した felica 型のポインタ。
+  mode  アクセスモード
+        0  直接アクセス
+           循環順編成アクセス
+           減算アクセス
+        1  戻入れアクセス
+  block ブロック番号
+  data  書き込みデータを格納するバッファへのポインタ兼応答データを格納するバッファへのポインタ。
+
+返り値
+  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
+
+
 
 
 
