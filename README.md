@@ -10,14 +10,14 @@
 
 ## コンパイルとインストール
 
-   $ ./configure
-   $ make
-   $ make install
+    $ ./configure
+    $ make
+    $ make install
 
 
 ## Debian パッケージの作成
 
-   $ dpkg-buildpackage -rfakeroot
+    $ dpkg-buildpackage -rfakeroot
 
 ## udev の設定
 
@@ -25,22 +25,22 @@ Debian GNU/Linux wheezy での設定例です。ディストリビューショ�
 
 1. 下記の内容を /lib/udev/rules.d/60-libpafe.rules として保存する。
 
-   ACTION!="add", GOTO="pasori_rules_end"
-   SUBSYSTEM=="usb_device", GOTO="pasori_rules_start"
-   SUBSYSTEM!="usb", GOTO="pasori_rules_end"
-   LABEL="pasori_rules_start"
-
-   ATTRS{idVendor}=="054c", ATTRS{idProduct}=="006c", MODE="0664", GROUP="plugdev"
-   ATTRS{idVendor}=="054c", ATTRS{idProduct}=="01bb", MODE="0664", GROUP="plugdev"
-   ATTRS{idVendor}=="054c", ATTRS{idProduct}=="02e1", MODE="0664", GROUP="plugdev"
-
-   LABEL="pasori_rules_end"
+    ACTION!="add", GOTO="pasori_rules_end"
+    SUBSYSTEM=="usb_device", GOTO="pasori_rules_start"
+    SUBSYSTEM!="usb", GOTO="pasori_rules_end"
+    LABEL="pasori_rules_start"
+    
+    ATTRS{idVendor}=="054c", ATTRS{idProduct}=="006c", MODE="0664", GROUP="plugdev"
+    ATTRS{idVendor}=="054c", ATTRS{idProduct}=="01bb", MODE="0664", GROUP="plugdev"
+    ATTRS{idVendor}=="054c", ATTRS{idProduct}=="02e1", MODE="0664", GROUP="plugdev"
+    
+    LABEL="pasori_rules_end"
 
 ファイル名は適宜変更してください。
 
 2. 次を実行。
 
-   udevadm control --reload-rules 
+    udevadm control --reload-rules 
 
 
 以上で plugdev グループに属しているユーザは pasori を利用できるようになるはずです。
@@ -50,179 +50,171 @@ Debian GNU/Linux wheezy での設定例です。ディストリビューショ�
 ### pasori *pasori_open(void);
 
 概要
-  デバイスファイルをオープンする。
+*  デバイスファイルをオープンする。
 
 返り値
-  成功した場合 psori 型のポインタを返す。失敗すると NULL が返される。
+*  成功した場合 psori 型のポインタを返す。失敗すると NULL が返される。
 
 
 ### pasori_devices *pasori_open_multi(void);
 
 概要
- 複数台のPaSoRiのデバイスファイルをオープンする。
+* 複数台のPaSoRiのデバイスファイルをオープンする。
 
 返り値
-  pasori_devices 型のポインタを返す。失敗すると pasori_devices->error_code にエラーコードが設定された状態で返される。
+*  pasori_devices 型のポインタを返す。失敗すると pasori_devices->error_code にエラーコードが設定された状態で返される。
 
 
-int pasori_init(pasori *p)
+### int pasori_init(pasori *p)
 
 概要
-  PaSoRi の初期化を行なう。
+*  PaSoRi の初期化を行なう。
 
 引数
-  p  pasori_open で取得した psori 型のポインタ。
+ * p  pasori_open で取得した psori 型のポインタ。
 
 返り値
-  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
+*  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 
 
 ### void pasori_close(pasori *p);
 
 概要
-  pasori_reset() を実行した後、デバイスファイルをクローズする。
+*  pasori_reset() を実行した後、デバイスファイルをクローズする。
 
 引数
-  p  pasori_open で取得した psori 型のポインタ。
+*  p  pasori_open で取得した psori 型のポインタ。
 
 
 
 ### int pasori_send(pasori *p, uint8 *data, int *size);
 
 概要
-  PaSoRi にデータを送出する。
+*  PaSoRi にデータを送出する。
 
 引数
-  p    pasori_open で取得した psori 型のポインタ。
-  data 送出するデータへのポインタ。
-  size 送出するデータのサイズ。
+*  p    pasori_open で取得した psori 型のポインタ。
+*  data 送出するデータへのポインタ。
+*  size 送出するデータのサイズ。
 
 返り値
-  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
+*  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 
 ### int pasori_recv(pasori *p, uint8 *data, int *size);
 
 概要
-  PaSoRi からデータを受け取る。
+* PaSoRi からデータを受け取る。
 
 引数
-  p    pasori_open で取得した psori 型のポインタ。
-  data データを格納するバッファへのポインタ。
-  size バッファのサイズへのポインタ。
+*  p    pasori_open で取得した psori 型のポインタ。
+*  data データを格納するバッファへのポインタ。
+*  size バッファのサイズへのポインタ。
 
 返り値
-  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
-  size が参照している場所に格納したデータの長さが保存される。
+*  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
+*  size が参照している場所に格納したデータの長さが保存される。
 
 
 ### int pasori_packet_write(pasori *p, uint8 *data, int *size)
 
 概要
-  PaSoRi にコマンドを送出する。内部で pasori_send を呼び出している。
+*  PaSoRi にコマンドを送出する。内部で pasori_send を呼び出している。
 
 引数
-  p    pasori_open で取得した psori 型のポインタ。
-  data 送出するデータへのポインタ。
-  size 送出するデータのサイズへのポインタ。
+*  p    pasori_open で取得した psori 型のポインタ。
+*  data 送出するデータへのポインタ。
+*  size 送出するデータのサイズへのポインタ。
 
 返り値
-  成功した場合 0 を返す。size が参照している場所に送出したデータの長さ
-  が保存される。失敗すると 0 以外の数値が返される。
+*  成功した場合 0 を返す。size が参照している場所に送出したデータの長さが保存される。失敗すると 0 以外の数値が返される。
 
 
 ### int pasori_packet_read(pasori * p, uint8 * data, int *size);
 
 概要
-  PaSoRi に送出したコマンドへの応答を取得する。内部で pasori_recv を呼
-  び出している。
+*  PaSoRi に送出したコマンドへの応答を取得する。内部で pasori_recv を呼び出している。
 
 引数
-  p    pasori_open で取得した psori 型のポインタ。
-  data データを格納するバッファへのポインタ。
-  size バッファのサイズへのポインタ。
+*  p    pasori_open で取得した psori 型のポインタ。
+*  data データを格納するバッファへのポインタ。
+*  size バッファのサイズへのポインタ。
 
 返り値
-  成功した場合 0 を返す。size が参照している場所に取得したデータの長さ
-  が保存される。失敗すると 0 以外の数値が返される。
+*  成功した場合 0 を返す。size が参照している場所に取得したデータの長さが保存される。失敗すると 0 以外の数値が返される。
 
 
 ### int pasori_write(pasori *p, uint8 *data, int *size);
 
 概要
-  FeliCa にデータを送信する。内部で pasori_packet_write を呼び出してい
-  る。
-  RC-S320 では PaSoRi2 コマンド 0x5C に対応する。
+*  FeliCa にデータを送信する。内部で pasori_packet_write を呼び出している。
+*  RC-S320 では PaSoRi2 コマンド 0x5C に対応する。
 
 引数
-  p    pasori_open で取得した psori 型のポインタ。
-  data データを格納するバッファへのポインタ。
-  size バッファのサイズへのポインタ。
+*  p    pasori_open で取得した psori 型のポインタ。
+*  data データを格納するバッファへのポインタ。
+*  size バッファのサイズへのポインタ。
 
 返り値
-  成功した場合 0 を返す。size が参照している場所に送信したデータの長さ
-  が保存される。失敗すると 0 以外の数値が返される。
+*  成功した場合 0 を返す。size が参照している場所に送信したデータの長さが保存される。失敗すると 0 以外の数値が返される。
 
 
 ### int pasori_read(pasori *p, uint8 *data, int *size);
 
 概要
-  FeliCa からの応答を受信する。内部で pasori_packet_read を呼び出してい
-  る。
+*  FeliCa からの応答を受信する。内部で pasori_packet_read を呼び出している。
 
 引数
-  p    pasori_open で取得した psori 型のポインタ。
-  data データを格納するバッファへのポインタ。
-  size バッファのサイズへのポインタ。
+*  p    pasori_open で取得した psori 型のポインタ。
+*  data データを格納するバッファへのポインタ。
+*  size バッファのサイズへのポインタ。
 
 返り値
-  成功した場合 0 を返す。size が参照している場所に格納したデータの長さ
-  が保存される。失敗すると 0 以外の数値が返される。
-
+ * 成功した場合 0 を返す。size が参照している場所に格納したデータの長さが保存される。失敗すると 0 以外の数値が返される。
 
 ### int pasori_reset(pasori * p);
 
 概要
-  RC-S320 では Pasori にリセットコマンドを送出する。(PaSoRi2 コマンド 0x54)
-  RC-S330 では RF Off などの処理を行う。
+*  RC-S320 では Pasori にリセットコマンドを送出する。(PaSoRi2 コマンド 0x54)
+ * RC-S330 では RF Off などの処理を行う。
 
 引数
-  p    pasori_open で取得した psori 型のポインタ。
+*  p    pasori_open で取得した psori 型のポインタ。
 
 返り値
-  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
+*  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 
 ### int pasori_version(pasori *p, int *v1, int *v2);
 
 概要
-  Pasori のファームウェアバージョンを取得する。
+*  Pasori のファームウェアバージョンを取得する。
 
 引数
-  p  pasori_open で取得した psori 型のポインタ。
-  v1 バージョンの上位番号を格納するためのポインタ。
-  v2 バージョンの下位番号を格納するためのポインタ。
+*  p  pasori_open で取得した psori 型のポインタ。
+*  v1 バージョンの上位番号を格納するためのポインタ。
+*  v2 バージョンの下位番号を格納するためのポインタ。
 
 返り値
-  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
+*  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 バグ
-  RC-S330 で正しい値が得られているかどうかは未確認。
+*  RC-S330 で正しい値が得られているかどうかは未確認。
 
 
 ### int pasori_type(pasori *p);
 
 概要
-  Pasori のタイプを取得する。
+*  Pasori のタイプを取得する。
 
 引数
-  p  pasori_open で取得した psori 型のポインタ。
+*  p  pasori_open で取得した psori 型のポインタ。
 
 返り値
-  PASORI_TYPE_S310
-  PASORI_TYPE_S320
-  PASORI_TYPE_S330
+*  PASORI_TYPE_S310
+*  PASORI_TYPE_S320
+*  PASORI_TYPE_S330
 
   失敗すると -1 が返される。
 
@@ -230,275 +222,263 @@ int pasori_init(pasori *p)
 ### int pasori_test(pasori *p, int code, uint8 *data, int *size, uint8 *rdata, int *rsize);
 
 概要
-  RC-S320 のみ有効。
-  Pasori の自己診断を行なう。(PaSoRi2 コマンド 0x52)
+* RC-S320 のみ有効。
+* Pasori の自己診断を行なう。(PaSoRi2 コマンド 0x52)
 
 引数
-  p     pasori_open で取得した psori 型のポインタ。
-  code  テストコード
-  data  テストデータを格納するバッファへのポインタ。
-  size  テストデータバッファのサイズへのポインタ。
-  rdata 応答データを格納するバッファへのポインタ。
-  rsize 応答データバッファのサイズへのポインタ。
+*  p     pasori_open で取得した psori 型のポインタ。
+*  code  テストコード
+*  data  テストデータを格納するバッファへのポインタ。
+*  size  テストデータバッファのサイズへのポインタ。
+*  rdata 応答データを格納するバッファへのポインタ。
+*  rsize 応答データバッファのサイズへのポインタ。
 
 
 返り値
-  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
+*  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 
 ### int pasori_test_echo(pasori *p, uint8 *data, int *size);
 
 概要
-  RC-S320 のみ有効。
-  Pasori のエコーバックテストを行なう。(テストコード 0x00)
+*  RC-S320 のみ有効。
+*  Pasori のエコーバックテストを行なう。(テストコード 0x00)
 
 引数
-  p    pasori_open で取得した psori 型のポインタ。
-  data テストデータを格納するバッファへのポインタ。
-  size テストデータバッファのサイズへのポインタ。
+*  p    pasori_open で取得した psori 型のポインタ。
+*  data テストデータを格納するバッファへのポインタ。
+*  size テストデータバッファのサイズへのポインタ。
 
 返り値
-  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
+*  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 
 ### int pasori_test_eprom(pasori *p);
 
 概要
-  RC-S320 のみ有効。
-  Pasori の EPROM テストを行なう。(テストコード 0x01)
+*  RC-S320 のみ有効。
+*  Pasori の EPROM テストを行なう。(テストコード 0x01)
 
 引数
-  p    pasori_open で取得した psori 型のポインタ。
+*  p    pasori_open で取得した psori 型のポインタ。
 
 返り値
-  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
+ * 成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 
 ### int pasori_test_ram(pasori *p);
 
 概要
-  RC-S320 のみ有効。
-  Pasori の RAM テストを行なう。(テストコード 0x02)
+*  RC-S320 のみ有効。
+*  Pasori の RAM テストを行なう。(テストコード 0x02)
 
 引数
-  p    pasori_open で取得した psori 型のポインタ。
+*  p    pasori_open で取得した psori 型のポインタ。
 
 返り値
-  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
+*  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 
 ### int pasori_test_cpu(pasori *p);
 
 概要
-  RC-S320 のみ有効。
-  Pasori の CPU テストを行なう。(テストコード 0x03)
+*  RC-S320 のみ有効。
+*  Pasori の CPU テストを行なう。(テストコード 0x03)
 
 引数
-  p    pasori_open で取得した psori 型のポインタ。
+*  p    pasori_open で取得した psori 型のポインタ。
 
 返り値
-  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
+*  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 
 ### int pasori_test_polling(pasori *p);
 
 概要
-  RC-S320 のみ有効。
-  Pasori のポーリングテストを行なう。(テストコード 0x10)
+*  RC-S320 のみ有効。
+*  Pasori のポーリングテストを行なう。(テストコード 0x10)
 
 引数
-  p pasori_open で取得した psori 型のポインタ。
+*  p pasori_open で取得した psori 型のポインタ。
 
 返り値
-  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
+*  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 
 ### void pasori_set_timeout(pasori *p, int timeout);
 
 概要
-  タイムアウトを設定する。
+*  タイムアウトを設定する。
 
 引数
-  p pasori_open で取得した psori 型のポインタ。
-  timeout timeout の値 (usb_control_msg() で使用される)。
+*  p pasori_open で取得した psori 型のポインタ。
+*  timeout timeout の値 (usb_control_msg() で使用される)。
 
 
 ### felica *felica_polling(pasori *p, uint16 systemcode, uint8 RFU, uint8 timeslot);
 
 概要
-  REQC (リクエストコマンド C 型) を送信し、以降の通信で必要なデータを取
-  得する。
+*  REQC (リクエストコマンド C 型) を送信し、以降の通信で必要なデータを取得する。
 
 引数
-  p pasori_open で取得した psori 型のポインタ。
-  systemcode システムコード
-              FELICA_POLLING_ANY   全てのシステムが反応する
-              FELICA_POLLING_SUICA Suica
-              FELICA_POLLING_EDY   Edy
-  RFU 予備 (通常は 0 を指定)
-  timeslot タイムスロットの最大値を指定する。詳細は JIS X 6319-4 を参照のこと。
+*  p pasori_open で取得した psori 型のポインタ。
+*  systemcode システムコード
+**             FELICA_POLLING_ANY   全てのシステムが反応する
+**              FELICA_POLLING_SUICA Suica
+**              FELICA_POLLING_EDY   Edy
+*  RFU 予備 (通常は 0 を指定)
+*  timeslot タイムスロットの最大値を指定する。詳細は JIS X 6319-4 を参照のこと。
 
 返り値
-  成功した場合 felica 型のポインタを返す。返された felica 型のポインタ
-  は不要になったときに free(3) で開放する必要がある。 失敗すると NULL
-  が返される。
+*  成功した場合 felica 型のポインタを返す。返された felica 型のポインタは不要になったときに free(3) で開放する必要がある。 失敗すると NULLが返される。
 
 
 ### int felica_get_idm(felica *f, uint8 *idm);
 
 概要
-  IDm (製造識別子) を取得する。
+*  IDm (製造識別子) を取得する。
 
 引数
-  f   felica_polling で取得した felica 型のポインタ。
-  idm IDm を格納するためのポインタ。
+*  f   felica_polling で取得した felica 型のポインタ。
+*  idm IDm を格納するためのポインタ。
 
 返り値
-  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
+*  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 
 ### int felica_get_pmm(felica *f, uint8 *pmm);
 
 概要
-  PMm (製造パラメタ) を取得する。
+*  PMm (製造パラメタ) を取得する。
 
 引数
-  f   felica_polling で取得した felica 型のポインタ。
-  pmm PMm を格納するためのポインタ。
+*  f   felica_polling で取得した felica 型のポインタ。
+*  pmm PMm を格納するためのポインタ。
 
 返り値
-  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
+*  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 
 ### int felica_read(felica * f, int *n, felica_block_info *info, uint8 *data);
 
 概要
-  Read コマンドを送信する。
+*  Read コマンドを送信する。
 
 引数
-  f    felica_polling で取得した felica 型のポインタ。
-  n    ブロック数へのポインタ。
-  info サービスコードリスト。
-  data 応答データを格納するバッファへのポインタ。
+*  f    felica_polling で取得した felica 型のポインタ。
+*  n    ブロック数へのポインタ。
+*  info サービスコードリスト。
+*  data 応答データを格納するバッファへのポインタ。
 
 返り値
-  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
+*  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 バグ
-  RC-S330 では動作未確認。
+*  RC-S330 では動作未確認。
 
 
 ### int felica_read_single(felica * f, int servicecode, int mode, uint8 block, uint8 *data);
 
 概要
-  Read コマンドを送信する。ブロック数は 1 に固定。
+ * Read コマンドを送信する。ブロック数は 1 に固定。
 
 引数
-  f     felica_polling で取得した felica 型のポインタ。
-  mode  アクセスモード
-        0  直接アクセス
-           循環順編成アクセス
-           減算アクセス
-        1  戻入れアクセス
-  block ブロック番号
-  data  応答データを格納するバッファへのポインタ。
+*  f     felica_polling で取得した felica 型のポインタ。
+*  mode  アクセスモード
+**        0  直接アクセス/循環順編成アクセス/減算アクセス
+**        1  戻入れアクセス
+*  block ブロック番号
+*  data  応答データを格納するバッファへのポインタ。
 
 返り値
-  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
+*  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 
 ### int felica_write_single(felica *f, int servicecode, int mode, uint8 addr, uint8 *data);
 
 概要
-  Write コマンドを送信する。ブロック数は 1 に固定。
+*  Write コマンドを送信する。ブロック数は 1 に固定。
 
 引数
-  f     felica_polling で取得した felica 型のポインタ。
-  mode  アクセスモード
-        0  直接アクセス
-           循環順編成アクセス
-           減算アクセス
-        1  戻入れアクセス
-  block ブロック番号
-  data  書き込みデータを格納するバッファへのポインタ兼応答データを格納するバッファへのポインタ。
+*  f     felica_polling で取得した felica 型のポインタ。
+*  mode  アクセスモード
+**        0  直接アクセス/循環順編成アクセス/減算アクセス
+**        1  戻入れアクセス
+*  block ブロック番号
+*  data  書き込みデータを格納するバッファへのポインタ兼応答データを格納するバッファへのポインタ。
 
 返り値
-  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
+*  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 
 ### int felica_request_service(felica *f, int *n, uint16 *list, uint16 *data);
 
 概要
-  Request Service コマンドを送信する。
+*  Request Service コマンドを送信する。
 
 引数
-  f    felica_polling で取得した felica 型のポインタ。
-  n    ブロック数へのポインタ。
-  list サービスコードリストまたはエリアコードリスト。
-  data 応答データを格納するバッファへのポインタ。
+*  f    felica_polling で取得した felica 型のポインタ。
+*  n    ブロック数へのポインタ。
+*  list サービスコードリストまたはエリアコードリスト。
+*  data 応答データを格納するバッファへのポインタ。
 
 返り値
-  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
+*  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 バグ
-  RC-S330 では動作未確認。
+*  RC-S330 では動作未確認。
 
 
 ### int felica_request_response(felica *f, uint8 *mode);
 
 概要
-  Request Response コマンドを送信する。現在のモードを調べる。
+*  Request Response コマンドを送信する。現在のモードを調べる。
 
 引数
-  f    felica_polling で取得した felica 型のポインタ。
-  mode モードを格納するためのポインタ。
+*  f    felica_polling で取得した felica 型のポインタ。
+*  mode モードを格納するためのポインタ。
 
 返り値
-  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
+*  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 バグ
-  RC-S330 では動作未確認。
+*  RC-S330 では動作未確認。
 
 
 ### int felica_search_service(felica *f);
 
 概要
-  0xffffがサービスコードとして返却されるまで Search Service Code コマン
-  ドを送信する。
-  取得されたサービスコードまたはエリアコードの数は
+*  0xffffがサービスコードとして返却されるまで Search Service Code コマンドを送信する。取得されたサービスコードまたはエリアコードの数は
 
   f->area_num, f->service_num
 
-  に設定されます。  それぞれのサービスコードまたはエリアコードは
+  に設定されます。
+*  それぞれのサービスコードまたはエリアコードは
 
   f->area[n].code, f->area[n].attr, f->area[n].bin
   f->service[n].code, f->service[n].attr, f->service[n].bin
 
-  で参照できます。code はサービス番号またはサービスファイルの最小ファイ
-  ル識別子、attr はアクセス制御処理区分、 bin はファイル識別子全体を表
-  します。
+  で参照できます。
+* code はサービス番号またはサービスファイルの最小ファイル識別子、attr はアクセス制御処理区分、 bin はファイル識別子全体を表します。
 
 引数
-  f    felica_polling で取得した felica 型のポインタ。
+*  f    felica_polling で取得した felica 型のポインタ。
 
 返り値
-  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
+*  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 
 ### int felica_request_system(felica *f, int *n, uint16 *data);
 
 概要
-  Request System Code コマンドを送信する。FeliCa のもつシステムコードの
-  リストを得る。
+ * Request System Code コマンドを送信する。FeliCa のもつシステムコードのリストを得る。
 
 引数
-  f    felica_polling で取得した felica 型のポインタ。
-  data 応答データを格納するバッファへのポインタ。
+*  f    felica_polling で取得した felica 型のポインタ。
+*  data 応答データを格納するバッファへのポインタ。
 
 返り値
-  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
-
-
+*  成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 ## 定数
 
