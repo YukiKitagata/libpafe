@@ -117,7 +117,6 @@ int pasori_init(pasori *p)
   size が参照している場所に格納したデータの長さが保存される。
 
 
-
 ### int pasori_packet_write(pasori *p, uint8 *data, int *size)
 
 概要
@@ -503,25 +502,25 @@ int pasori_init(pasori *p)
 
 ## 定数
 
-FELICA_IDM_LENGTH      IDm のサイズ
-FELICA_PMM_LENGTH      PMm のサイズ
-FELICA_BLOCK_LENGTH    ブロックのサイズ
++ FELICA_IDM_LENGTH      IDm のサイズ
++ FELICA_PMM_LENGTH      PMm のサイズ
++ FELICA_BLOCK_LENGTH    ブロックのサイズ
 
 
 ## 戻り値
 
-PASORI_ERR_PARM    引数に誤りがある。
-PASORI_ERR_MEM     メモリの確保に失敗した。
-PASORI_ERR_COM     通信エラー。
-PASORI_ERR_DATA    データに異常がある。
-PASORI_ERR_CHKSUM  チェックサムに失敗した。
-PASORI_ERR_FORMAT  コマンドの形式が異常。
-PASORI_ERR_TYPE    未対応のハードウェア。
++ PASORI_ERR_PARM    引数に誤りがある。
++ PASORI_ERR_MEM     メモリの確保に失敗した。
++ PASORI_ERR_COM     通信エラー。
++ PASORI_ERR_DATA    データに異常がある。
++ PASORI_ERR_CHKSUM  チェックサムに失敗した。
++ PASORI_ERR_FORMAT  コマンドの形式が異常。
++ PASORI_ERR_TYPE    未対応のハードウェア。
 
 
 # 連絡先
 
-ZXB01226@nifty.com （オリジナルソースコード）
-rfujita@redhat.com （RPM化及びバージョン0.0.7をベースにしたgit化）
-hiroya@cuc.ac.jp    (複数台のPaSoRiへの対応)
++ ZXB01226@nifty.com （オリジナルソースコード）
++ rfujita@redhat.com （RPM化及びバージョン0.0.7をベースにしたgit化）
++ hiroya@cuc.ac.jp    (複数台のPaSoRiへの対応)
 
