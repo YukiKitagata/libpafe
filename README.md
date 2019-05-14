@@ -24,7 +24,7 @@
 Debian GNU/Linux wheezy での設定例です。ディストリビューションやバージョンにより設定が異なる可能性がありますので適宜読み替えて設定を行なってください。
 
 1. 下記の内容を /lib/udev/rules.d/60-libpafe.rules として保存する。
-
+```
     ACTION!="add", GOTO="pasori_rules_end"
     SUBSYSTEM=="usb_device", GOTO="pasori_rules_start"
     SUBSYSTEM!="usb", GOTO="pasori_rules_end"
@@ -35,13 +35,14 @@ Debian GNU/Linux wheezy での設定例です。ディストリビューショ�
     ATTRS{idVendor}=="054c", ATTRS{idProduct}=="02e1", MODE="0664", GROUP="plugdev"
     
     LABEL="pasori_rules_end"
+```
 
 ファイル名は適宜変更してください。
 
 2. 次を実行。
-
+```
     udevadm control --reload-rules 
-
+```
 
 以上で plugdev グループに属しているユーザは pasori を利用できるようになるはずです。
 
