@@ -1,58 +1,48 @@
-・ このライブラリは libpasori (http://libpasori.sourceforge.jp/) を再構
-   成し、若干の機能追加などを行なったものです。
++ このライブラリは libpasori (http://libpasori.sourceforge.jp/) を再構成し、若干の機能追加などを行なったものです。
 
-・ NFC Reader/Writer Linux Driver ( http://core.dumped.cc/devel/nfc/index.ja.html )
-   および
-   libnfc ( http://www.libnfc.org/ )
-   のソースコードも参考にしています。
++ NFC Reader/Writer Linux Driver ( http://core.dumped.cc/devel/nfc/index.ja.html ) および libnfc ( http://www.libnfc.org/ )のソースコードも参考にしています。
++ Sony の PaSoRi RC-S320 および RC-S330 に対応しています。
++ 動作確認などは不十分な状態なので、各自の責任でご利用ください。
 
-・ Sony の PaSoRi RC-S320 および RC-S330 に対応しています。
+= コンパイルとインストール
 
-・ 動作確認などは不十分な状態なので、各自の責任でご利用ください。
-
-
-●コンパイルとインストール
-
-$ ./configure
-$ make
-# make install
+   $ ./configure
+   $ make
+   # make install
 
 
-●Debian パッケージの作成
+= Debian パッケージの作成
+
 $ dpkg-buildpackage -rfakeroot
 
 
-●udev の設定
+= udev の設定
 
-Debian GNU/Linux wheezy での設定例です。ディストリビューションやバージョ
-ンにより設定が異なる可能性がありますので適宜読み替えて設定を行なってく
-ださい。
+Debian GNU/Linux wheezy での設定例です。ディストリビューションやバージョンにより設定が異なる可能性がありますので適宜読み替えて設定を行なってください。
 
 1. 下記の内容を /lib/udev/rules.d/60-libpafe.rules として保存する。
 
-ACTION!="add", GOTO="pasori_rules_end"
-SUBSYSTEM=="usb_device", GOTO="pasori_rules_start"
-SUBSYSTEM!="usb", GOTO="pasori_rules_end"
-LABEL="pasori_rules_start"
+   ACTION!="add", GOTO="pasori_rules_end"
+   SUBSYSTEM=="usb_device", GOTO="pasori_rules_start"
+   SUBSYSTEM!="usb", GOTO="pasori_rules_end"
+   LABEL="pasori_rules_start"
 
-ATTRS{idVendor}=="054c", ATTRS{idProduct}=="006c", MODE="0664", GROUP="plugdev"
-ATTRS{idVendor}=="054c", ATTRS{idProduct}=="01bb", MODE="0664", GROUP="plugdev"
-ATTRS{idVendor}=="054c", ATTRS{idProduct}=="02e1", MODE="0664", GROUP="plugdev"
+   ATTRS{idVendor}=="054c", ATTRS{idProduct}=="006c", MODE="0664", GROUP="plugdev"
+   ATTRS{idVendor}=="054c", ATTRS{idProduct}=="01bb", MODE="0664", GROUP="plugdev"
+   ATTRS{idVendor}=="054c", ATTRS{idProduct}=="02e1", MODE="0664", GROUP="plugdev"
 
-LABEL="pasori_rules_end"
-
+   LABEL="pasori_rules_end"
 
 ファイル名は適宜変更してください。
 
-2. udevadm control --reload-rules を実行。
+2. 次を実行。
+
+   udevadm control --reload-rules 
 
 
-以上で plugdev グループに属しているユーザは pasori を利用できるようにな
-るはずです。
+以上で plugdev グループに属しているユーザは pasori を利用できるようになるはずです。
 
-
-
-●関数リファレンス
+= 関数リファレンス
 
 pasori *pasori_open(void);
 
@@ -546,7 +536,7 @@ PASORI_ERR_FORMAT  コマンドの形式が異常。
 PASORI_ERR_TYPE    未対応のハードウェア。
 
 
-●連絡先
+= 連絡先
 
 ZXB01226@nifty.com （オリジナルソースコード）
 rfujita@redhat.com （RPM化及びバージョン0.0.7をベースにしたgit化）
