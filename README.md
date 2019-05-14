@@ -1,22 +1,25 @@
+# 概要
+
 + このライブラリは libpasori (http://libpasori.sourceforge.jp/) を再構成し、若干の機能追加などを行なったものです。
 
 + NFC Reader/Writer Linux Driver ( http://core.dumped.cc/devel/nfc/index.ja.html ) および libnfc ( http://www.libnfc.org/ )のソースコードも参考にしています。
 + Sony の PaSoRi RC-S320 および RC-S330 に対応しています。
 + 動作確認などは不十分な状態なので、各自の責任でご利用ください。
 
-= コンパイルとインストール
+# インストール
+
+## コンパイルとインストール
 
    $ ./configure
    $ make
-   # make install
+   $ make install
 
 
-= Debian パッケージの作成
+## Debian パッケージの作成
 
-$ dpkg-buildpackage -rfakeroot
+   $ dpkg-buildpackage -rfakeroot
 
-
-= udev の設定
+## udev の設定
 
 Debian GNU/Linux wheezy での設定例です。ディストリビューションやバージョンにより設定が異なる可能性がありますので適宜読み替えて設定を行なってください。
 
@@ -42,9 +45,9 @@ Debian GNU/Linux wheezy での設定例です。ディストリビューショ�
 
 以上で plugdev グループに属しているユーザは pasori を利用できるようになるはずです。
 
-= 関数リファレンス
+# 関数リファレンス
 
-pasori *pasori_open(void);
+### pasori *pasori_open(void);
 
 概要
   デバイスファイルをオープンする。
@@ -53,7 +56,7 @@ pasori *pasori_open(void);
   成功した場合 psori 型のポインタを返す。失敗すると NULL が返される。
 
 
-pasori_devices *pasori_open_multi(void);
+### pasori_devices *pasori_open_multi(void);
 
 概要
  複数台のPaSoRiのデバイスファイルをオープンする。
@@ -75,7 +78,7 @@ int pasori_init(pasori *p)
 
 
 
-void pasori_close(pasori *p);
+### void pasori_close(pasori *p);
 
 概要
   pasori_reset() を実行した後、デバイスファイルをクローズする。
@@ -85,7 +88,7 @@ void pasori_close(pasori *p);
 
 
 
-int pasori_send(pasori *p, uint8 *data, int *size);
+### int pasori_send(pasori *p, uint8 *data, int *size);
 
 概要
   PaSoRi にデータを送出する。
@@ -99,7 +102,7 @@ int pasori_send(pasori *p, uint8 *data, int *size);
   成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 
-int pasori_recv(pasori *p, uint8 *data, int *size);
+### int pasori_recv(pasori *p, uint8 *data, int *size);
 
 概要
   PaSoRi からデータを受け取る。
@@ -115,7 +118,7 @@ int pasori_recv(pasori *p, uint8 *data, int *size);
 
 
 
-int pasori_packet_write(pasori *p, uint8 *data, int *size)
+### int pasori_packet_write(pasori *p, uint8 *data, int *size)
 
 概要
   PaSoRi にコマンドを送出する。内部で pasori_send を呼び出している。
@@ -130,8 +133,7 @@ int pasori_packet_write(pasori *p, uint8 *data, int *size)
   が保存される。失敗すると 0 以外の数値が返される。
 
 
-
-int pasori_packet_read(pasori * p, uint8 * data, int *size);
+### int pasori_packet_read(pasori * p, uint8 * data, int *size);
 
 概要
   PaSoRi に送出したコマンドへの応答を取得する。内部で pasori_recv を呼
@@ -147,7 +149,7 @@ int pasori_packet_read(pasori * p, uint8 * data, int *size);
   が保存される。失敗すると 0 以外の数値が返される。
 
 
-int pasori_write(pasori *p, uint8 *data, int *size);
+### int pasori_write(pasori *p, uint8 *data, int *size);
 
 概要
   FeliCa にデータを送信する。内部で pasori_packet_write を呼び出してい
@@ -164,7 +166,7 @@ int pasori_write(pasori *p, uint8 *data, int *size);
   が保存される。失敗すると 0 以外の数値が返される。
 
 
-int pasori_read(pasori *p, uint8 *data, int *size);
+### int pasori_read(pasori *p, uint8 *data, int *size);
 
 概要
   FeliCa からの応答を受信する。内部で pasori_packet_read を呼び出してい
@@ -180,7 +182,7 @@ int pasori_read(pasori *p, uint8 *data, int *size);
   が保存される。失敗すると 0 以外の数値が返される。
 
 
-int pasori_reset(pasori * p);
+### int pasori_reset(pasori * p);
 
 概要
   RC-S320 では Pasori にリセットコマンドを送出する。(PaSoRi2 コマンド 0x54)
@@ -193,8 +195,7 @@ int pasori_reset(pasori * p);
   成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 
-
-int pasori_version(pasori *p, int *v1, int *v2);
+### int pasori_version(pasori *p, int *v1, int *v2);
 
 概要
   Pasori のファームウェアバージョンを取得する。
@@ -211,8 +212,7 @@ int pasori_version(pasori *p, int *v1, int *v2);
   RC-S330 で正しい値が得られているかどうかは未確認。
 
 
-
-int pasori_type(pasori *p);
+### int pasori_type(pasori *p);
 
 概要
   Pasori のタイプを取得する。
@@ -228,8 +228,7 @@ int pasori_type(pasori *p);
   失敗すると -1 が返される。
 
 
-
-int pasori_test(pasori *p, int code, uint8 *data, int *size, uint8 *rdata, int *rsize);
+### int pasori_test(pasori *p, int code, uint8 *data, int *size, uint8 *rdata, int *rsize);
 
 概要
   RC-S320 のみ有効。
@@ -248,8 +247,7 @@ int pasori_test(pasori *p, int code, uint8 *data, int *size, uint8 *rdata, int *
   成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 
-
-int pasori_test_echo(pasori *p, uint8 *data, int *size);
+### int pasori_test_echo(pasori *p, uint8 *data, int *size);
 
 概要
   RC-S320 のみ有効。
@@ -264,8 +262,7 @@ int pasori_test_echo(pasori *p, uint8 *data, int *size);
   成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 
-
-int pasori_test_eprom(pasori *p);
+### int pasori_test_eprom(pasori *p);
 
 概要
   RC-S320 のみ有効。
@@ -278,8 +275,7 @@ int pasori_test_eprom(pasori *p);
   成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 
-
-int pasori_test_ram(pasori *p);
+### int pasori_test_ram(pasori *p);
 
 概要
   RC-S320 のみ有効。
@@ -292,8 +288,7 @@ int pasori_test_ram(pasori *p);
   成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 
-
-int pasori_test_cpu(pasori *p);
+### int pasori_test_cpu(pasori *p);
 
 概要
   RC-S320 のみ有効。
@@ -306,8 +301,7 @@ int pasori_test_cpu(pasori *p);
   成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 
-
-int pasori_test_polling(pasori *p);
+### int pasori_test_polling(pasori *p);
 
 概要
   RC-S320 のみ有効。
@@ -320,8 +314,7 @@ int pasori_test_polling(pasori *p);
   成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 
-
-void pasori_set_timeout(pasori *p, int timeout);
+### void pasori_set_timeout(pasori *p, int timeout);
 
 概要
   タイムアウトを設定する。
@@ -331,8 +324,7 @@ void pasori_set_timeout(pasori *p, int timeout);
   timeout timeout の値 (usb_control_msg() で使用される)。
 
 
-
-felica *felica_polling(pasori *p, uint16 systemcode, uint8 RFU, uint8 timeslot);
+### felica *felica_polling(pasori *p, uint16 systemcode, uint8 RFU, uint8 timeslot);
 
 概要
   REQC (リクエストコマンド C 型) を送信し、以降の通信で必要なデータを取
@@ -353,8 +345,7 @@ felica *felica_polling(pasori *p, uint16 systemcode, uint8 RFU, uint8 timeslot);
   が返される。
 
 
-
-int felica_get_idm(felica *f, uint8 *idm);
+### int felica_get_idm(felica *f, uint8 *idm);
 
 概要
   IDm (製造識別子) を取得する。
@@ -367,8 +358,7 @@ int felica_get_idm(felica *f, uint8 *idm);
   成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 
-
-int felica_get_pmm(felica *f, uint8 *pmm);
+### int felica_get_pmm(felica *f, uint8 *pmm);
 
 概要
   PMm (製造パラメタ) を取得する。
@@ -381,8 +371,7 @@ int felica_get_pmm(felica *f, uint8 *pmm);
   成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 
-
-int felica_read(felica * f, int *n, felica_block_info *info, uint8 *data);
+### int felica_read(felica * f, int *n, felica_block_info *info, uint8 *data);
 
 概要
   Read コマンドを送信する。
@@ -400,7 +389,7 @@ int felica_read(felica * f, int *n, felica_block_info *info, uint8 *data);
   RC-S330 では動作未確認。
 
 
-int felica_read_single(felica * f, int servicecode, int mode, uint8 block, uint8 *data);
+### int felica_read_single(felica * f, int servicecode, int mode, uint8 block, uint8 *data);
 
 概要
   Read コマンドを送信する。ブロック数は 1 に固定。
@@ -419,8 +408,7 @@ int felica_read_single(felica * f, int servicecode, int mode, uint8 block, uint8
   成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 
-
-int felica_write_single(felica *f, int servicecode, int mode, uint8 addr, uint8 *data);
+### int felica_write_single(felica *f, int servicecode, int mode, uint8 addr, uint8 *data);
 
 概要
   Write コマンドを送信する。ブロック数は 1 に固定。
@@ -439,10 +427,7 @@ int felica_write_single(felica *f, int servicecode, int mode, uint8 addr, uint8 
   成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 
-
-
-
-int felica_request_service(felica *f, int *n, uint16 *list, uint16 *data);
+### int felica_request_service(felica *f, int *n, uint16 *list, uint16 *data);
 
 概要
   Request Service コマンドを送信する。
@@ -460,7 +445,7 @@ int felica_request_service(felica *f, int *n, uint16 *list, uint16 *data);
   RC-S330 では動作未確認。
 
 
-int felica_request_response(felica *f, uint8 *mode);
+### int felica_request_response(felica *f, uint8 *mode);
 
 概要
   Request Response コマンドを送信する。現在のモードを調べる。
@@ -476,7 +461,7 @@ int felica_request_response(felica *f, uint8 *mode);
   RC-S330 では動作未確認。
 
 
-int felica_search_service(felica *f);
+### int felica_search_service(felica *f);
 
 概要
   0xffffがサービスコードとして返却されるまで Search Service Code コマン
@@ -501,8 +486,7 @@ int felica_search_service(felica *f);
   成功した場合 0 を返す。失敗すると 0 以外の数値が返される。
 
 
-
-int felica_request_system(felica *f, int *n, uint16 *data);
+### int felica_request_system(felica *f, int *n, uint16 *data);
 
 概要
   Request System Code コマンドを送信する。FeliCa のもつシステムコードの
@@ -517,15 +501,14 @@ int felica_request_system(felica *f, int *n, uint16 *data);
 
 
 
-定数
+## 定数
 
 FELICA_IDM_LENGTH      IDm のサイズ
 FELICA_PMM_LENGTH      PMm のサイズ
 FELICA_BLOCK_LENGTH    ブロックのサイズ
 
 
-
-戻り値
+## 戻り値
 
 PASORI_ERR_PARM    引数に誤りがある。
 PASORI_ERR_MEM     メモリの確保に失敗した。
@@ -536,7 +519,7 @@ PASORI_ERR_FORMAT  コマンドの形式が異常。
 PASORI_ERR_TYPE    未対応のハードウェア。
 
 
-= 連絡先
+# 連絡先
 
 ZXB01226@nifty.com （オリジナルソースコード）
 rfujita@redhat.com （RPM化及びバージョン0.0.7をベースにしたgit化）
