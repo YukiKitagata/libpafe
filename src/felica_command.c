@@ -546,7 +546,8 @@ felica_write(felica *f, int *n, felica_block_info *info, uint8 *data){
   cmd[FELICA_IDM_LENGTH + snum * 2 + 2] = num;
   memcpy(cmd + FELICA_IDM_LENGTH + snum * 2 + 3, blklist, blen);
   memcpy(cmd + FELICA_IDM_LENGTH + snum * 2 + 3 + blen , data, 16 * num);
-  
+
+  size = FELICA_IDM_LENGTH + snum * 2 + blen + 3 + 16 * num;
   i = pasori_write(f->p, cmd, &size);
   if (i) {
     return i;
