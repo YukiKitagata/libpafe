@@ -237,7 +237,7 @@ felica_write_single(felica *f, int servicecode, int mode, uint8 addr, uint8 *dat
 }
 
 int
-felica_read_multi(felica *f, int n, int *servicecode, int *mode, uint8 *addr, uint8 *data)
+felica_read_multi(felica *f, int n, uint8 *servicecode, uint8 *mode, uint8 *addr, uint8 *data)
 {
   felica_block_info info[4];
   for(int i = 0; i<n; i++){
@@ -249,7 +249,7 @@ felica_read_multi(felica *f, int n, int *servicecode, int *mode, uint8 *addr, ui
 }
 
 int
-felica_write_multi(felica *f, int n, int *servicecode, int *mode, uint8 *addr, uint8 *data)
+felica_write_multi(felica *f, int n, uint8 *servicecode, uint8 *mode, uint8 *addr, uint8 *data)
 {
   felica_block_info info[2];
   for(int i = 0; i<n; i++){
