@@ -236,6 +236,31 @@ felica_write_single(felica *f, int servicecode, int mode, uint8 addr, uint8 *dat
   return felica_write(f, &n, &info, data);
 }
 
+int
+felica_read_multi(felica *f, int n, int *servicecode, int *mode, uint8 *addr, uint8 *data)
+{
+  felica_block_info info[4];
+  for(int i = 0; i<n; i++){
+    info[i].service = servicecode[i];
+    info[i].mode = mode[i];
+    info[i].block = addr[i];
+  }
+  return felica_read(f, &n, &info, data);
+}
+
+int
+felica_write_multi(felica *f, int n, int *servicecode, int *mode, uint8 *addr, uint8 *data)
+{
+  felica_block_info info[2];
+  for(int i = 0; i<n; i++){
+    info[i].service = servicecode[i];
+    info[i].mode = mode[i];
+    info[i].block = addr[i];
+  }
+
+  return felica_write(f, &n, &info, data);
+}
+
 felica *
 felica_polling(pasori *pp, uint16 systemcode, uint8 RFU, uint8 timeslot)
 {
