@@ -39,6 +39,21 @@ _felica_pasori_read(pasori *p, uint8 *data, int *size, int ofst)
 }
 
 static int
+_felica_pasori_write(pasori *p, uint8 *data, int *size)
+{
+  int len, i;
+
+  len = *size;
+
+  if (len > DATASIZE)
+    return -1;
+
+  i = pasori_write(p, data, &len);
+
+  return i;
+}
+
+static int
 felica_pasori_read(pasori *p, uint8 *data, int *size)
 {
   int ofst;
@@ -56,6 +71,27 @@ felica_pasori_read(pasori *p, uint8 *data, int *size)
   }
 
   return _felica_pasori_read(p, data, size, ofst);
+}
+
+static int
+felica_pasori_write(pasori *p, uint8 *data, int *size)
+{
+  /*
+  int ofst;
+
+  switch (pasori_type(p)) {
+  case PASORI_TYPE_S310:
+  case PASORI_TYPE_S320:
+    ofst = 0;
+    break;
+  case PASORI_TYPE_S330:
+    ofst = 2;
+    break;
+  default:
+    return PASORI_ERR_TYPE;
+  }
+  */
+  return _felica_pasori_write(p, data, size/*, ofst*/);
 }
 
 
@@ -484,12 +520,12 @@ felica_request_system(felica *f, int *n, uint16 *data)
 
 int
 felica_write(felica *f, int *n, felica_block_info *info, uint8 *data){
-  uint8* cmd;
+  uint8 cmd[DATASIZE + 1];
   uint8 resp[DATASIZE + 1];
   uint8 blklist[DATASIZE], services[DATASIZE];
   int i, size, blen, snum, num;
 
-  if (f == NULL || data == NULL)
+  if (f == NULL || n == NULL || info == NULL || data == NULL)
     return PASORI_ERR_PARM;
 
   num = *n;
@@ -497,14 +533,10 @@ felica_write(felica *f, int *n, felica_block_info *info, uint8 *data){
   if (num == 0)
     return 0;
   
-  size = FELICA_IDM_LENGTH + snum * 2 + 3 + blen + (16 * num);
-
   blen = pack_block_info(num, info, &snum, services, blklist);
   if (blen < 0 || blen + FELICA_IDM_LENGTH + snum + 6 > DATASIZE)
     return PASORI_ERR_PARM;
 
-  cmd = malloc(sizeof(uint8) * size);
-  
   cmd[0] = FELICA_CMD_WRITE_WITHOUT_ENCRYPTION;
   memcpy(cmd + 1, f->IDm, FELICA_IDM_LENGTH);
   
@@ -533,12 +565,5 @@ felica_write(felica *f, int *n, felica_block_info *info, uint8 *data){
     Log("ERROR %02X %02X\n", resp[FELICA_IDM_LENGTH + 1], resp[FELICA_IDM_LENGTH + 2]);
     return PASORI_ERR_DATA;
   }
-
-  if (resp[FELICA_IDM_LENGTH + 3] < num)
-    num = resp[FELICA_IDM_LENGTH + 3];
-
-  memcpy(data, &resp[FELICA_IDM_LENGTH + 4], FELICA_BLOCK_LENGTH * num);
-  *n = num;
-
   return 0;
 }
